@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personalized Content Dashboard
 
-## Getting Started
+A Next.js dashboard that aggregates **news** (NewsAPI), **movie recommendations** (TMDB), and **social posts** (mock API) into one personalized feed with search, favorites, drag-and-drop reordering, and dark mode.
 
-First, run the development server:
+## Features
+
+- **Personalized feed** driven by category preferences (Settings)
+- **RTK Query** for async API loading with infinite scroll / load more
+- **Debounced search** across news, movies, and social content
+- **Trending** and **Favorites** sections
+- **Drag-and-drop** feed ordering (`@dnd-kit`)
+- **Redux Toolkit + redux-persist** (preferences, UI, favorites)
+- **Dark mode** via CSS custom properties + Tailwind
+- **Framer Motion** transitions and loading states
+- **Unit / integration tests** (Vitest) and **E2E** (Playwright)
+
+## Prerequisites
+
+- Node.js 20+
+- npm
+
+## Setup
+
+```bash
+git clone <your-repo-url>
+cd pgagi
+npm install
+cp .env.example .env.local
+```
+
+Optional API keys in `.env.local` (the app uses **mock data** when keys are omitted):
+
+| Variable        | Service   | Get a key                          |
+|----------------|-----------|-------------------------------------|
+| `NEWS_API_KEY` | NewsAPI   | https://newsapi.org/register        |
+| `TMDB_API_KEY` | TMDB v3   | https://www.themoviedb.org/settings/api |
+
+Keys are only read on the **server** in `/api/*` routes — never exposed to the browser.
+
+## Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Testing
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Unit + integration (Vitest)
+npm test
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# E2E (starts dev server automatically)
+npm run test:e2e
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+src/
+  app/api/          # BFF routes (news, movies, social, search)
+  components/       # UI, layout, sections
+  store/            # Redux slices + RTK Query API
+  lib/              # API clients, mocks, utilities
+  types/            # Shared TypeScript types
+e2e/                # Playwright specs
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Architecture notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **State**: `preferences`, `favorites`, and `ui` (dark mode, navigation, feed order, search) persist in `localStorage` via redux-persist.
+- **Data**: Client calls `/api/feed`, `/api/trending`, and `/api/search`; routes call external APIs or fall back to mocks.
+- **Social**: Mock hashtag feed — swap `src/lib/api/social.ts` for a real provider when credentials are available.
+
+## License
+
+MIT (assignment submission — adjust as needed).
