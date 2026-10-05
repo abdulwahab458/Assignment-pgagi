@@ -17,7 +17,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 export function FeedSection() {
   const dispatch = useAppDispatch();
   const categories = useAppSelector((s) => s.preferences.categories);
-  const hashtag = useAppSelector((s) => s.preferences.socialHashtag);
   const feedOrder = useAppSelector((s) => s.ui.feedOrder);
   const searchQuery = useAppSelector((s) => s.ui.searchQuery);
   const debouncedSearch = useDebouncedValue(searchQuery, 400);
@@ -26,10 +25,13 @@ export function FeedSection() {
   const { data, isLoading, isFetching, isError, refetch } = useGetFeedPageQuery({
     categories,
     page,
-    hashtag,
   });
 
-  const { data: searchResults, isFetching: searchLoading } =
+  const {
+    data: searchResults,
+    isFetching: searchLoading,
+    isError: isSearchError,
+  } =
     useSearchContentQuery(
       { q: debouncedSearch },
       { skip: debouncedSearch.trim().length < 2 },
@@ -37,7 +39,7 @@ export function FeedSection() {
 
   useEffect(() => {
     setPage(1);
-  }, [categories.join(","), hashtag]);
+  }, [categories.join(",")]);
 
   const showSearch = debouncedSearch.trim().length >= 2;
   const items = showSearch ? (searchResults ?? []) : (data?.items ?? []);
@@ -72,19 +74,23 @@ export function FeedSection() {
           {showSearch ? "Search results" : "Your feed"}
         </h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          News, recommendations, and social posts tailored to your preferences.
-          Drag cards by the handle to reorder.
+          Live news and movie recommendations tailored to your preferences. Drag
+          cards by the handle to reorder.
         </p>
       </div>
 
       <AnimatePresence mode="wait">
         {(isLoading || (showSearch && searchLoading)) && items.length === 0 ? (
           <LoadingSpinner key="loading" />
-        ) : isError && !showSearch ? (
+        ) : (isError && !showSearch) || (isSearchError && showSearch) ? (
           <EmptyState
             key="error"
-            title="Could not load feed"
-            description="Check your connection or API keys in .env.local."
+            title={showSearch ? "Could not search content" : "Could not load feed"}
+            description={
+              showSearch
+                ? "Check your connection and try again."
+                : "Check your connection or API keys in .env.local."
+            }
           />
         ) : items.length === 0 ? (
           <EmptyState

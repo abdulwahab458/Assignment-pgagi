@@ -6,7 +6,6 @@ import {
 
 export interface PreferencesState {
   categories: ContentCategory[];
-  socialHashtag: string;
   userName: string;
 }
 
@@ -14,7 +13,6 @@ const defaultCategories: ContentCategory[] = ["technology", "entertainment"];
 
 const initialState: PreferencesState = {
   categories: defaultCategories,
-  socialHashtag: "tech",
   userName: "Guest User",
 };
 
@@ -39,9 +37,6 @@ const preferencesSlice = createSlice({
       );
       state.categories = valid.length > 0 ? valid : defaultCategories;
     },
-    setSocialHashtag(state, action: PayloadAction<string>) {
-      state.socialHashtag = action.payload.trim() || "tech";
-    },
     setUserName(state, action: PayloadAction<string>) {
       state.userName = action.payload.trim() || "Guest User";
     },
@@ -51,7 +46,6 @@ const preferencesSlice = createSlice({
 export const {
   toggleCategory,
   setCategories,
-  setSocialHashtag,
   setUserName,
 } = preferencesSlice.actions;
 export default preferencesSlice.reducer;

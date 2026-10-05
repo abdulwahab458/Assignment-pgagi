@@ -9,13 +9,11 @@ import { toggleFavorite } from "@/store/slices/favoritesSlice";
 const sourceLabels: Record<ContentItem["source"], string> = {
   news: "News",
   movie: "Movies",
-  social: "Social",
 };
 
 const ctaLabels: Record<ContentItem["source"], string> = {
   news: "Read More",
   movie: "View Details",
-  social: "Open Post",
 };
 
 export function ContentCard({

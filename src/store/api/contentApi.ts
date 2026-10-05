@@ -11,7 +11,6 @@ export interface FeedQueryArgs {
   categories: ContentCategory[];
   page: number;
   pageSize?: number;
-  hashtag?: string;
 }
 
 export interface SearchQueryArgs {
@@ -24,12 +23,11 @@ export const contentApi = createApi({
   tagTypes: ["Feed", "Trending", "Search"],
   endpoints: (builder) => ({
     getFeedPage: builder.query<PaginatedResponse, FeedQueryArgs>({
-      query: ({ categories, page, pageSize = 6, hashtag = "tech" }) => {
+      query: ({ categories, page, pageSize = 6 }) => {
         const params = new URLSearchParams({
           categories: categories.join(","),
           page: String(page),
           pageSize: String(pageSize),
-          hashtag,
         });
         return `/feed?${params.toString()}`;
       },
@@ -48,8 +46,7 @@ export const contentApi = createApi({
       },
       forceRefetch: ({ currentArg, previousArg }) =>
         currentArg?.page !== previousArg?.page ||
-        currentArg?.categories.join(",") !== previousArg?.categories.join(",") ||
-        currentArg?.hashtag !== previousArg?.hashtag,
+        currentArg?.categories.join(",") !== previousArg?.categories.join(","),
       providesTags: ["Feed"],
     }),
     getTrending: builder.query<ContentItem[], void>({

@@ -4,16 +4,13 @@ import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   toggleCategory,
-  setSocialHashtag,
   setUserName,
 } from "@/store/slices/preferencesSlice";
 import { CONTENT_CATEGORIES, type ContentCategory } from "@/types/content";
 
 export function SettingsPanel() {
   const dispatch = useAppDispatch();
-  const { categories, socialHashtag, userName } = useAppSelector(
-    (s) => s.preferences,
-  );
+  const { categories, userName } = useAppSelector((s) => s.preferences);
 
   return (
     <motion.section
@@ -67,20 +64,6 @@ export function SettingsPanel() {
             );
           })}
         </div>
-      </fieldset>
-
-      <fieldset className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-        <legend className="px-1 text-sm font-semibold">Social hashtag</legend>
-        <input
-          type="text"
-          value={socialHashtag}
-          onChange={(e) => dispatch(setSocialHashtag(e.target.value))}
-          placeholder="tech"
-          className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
-        />
-        <p className="text-xs text-[var(--muted)]">
-          Mock social API loads posts for this hashtag (no Twitter key required).
-        </p>
       </fieldset>
     </motion.section>
   );

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import preferencesReducer, {
   toggleCategory,
   setCategories,
-  setSocialHashtag,
 } from "./preferencesSlice";
 
 describe("preferencesSlice", () => {
@@ -19,10 +18,5 @@ describe("preferencesSlice", () => {
   it("falls back to defaults when setCategories is empty", () => {
     const state = preferencesReducer(undefined, setCategories([]));
     expect(state.categories).toEqual(["technology", "entertainment"]);
-  });
-
-  it("normalizes social hashtag", () => {
-    const state = preferencesReducer(undefined, setSocialHashtag("   "));
-    expect(state.socialHashtag).toBe("tech");
   });
 });

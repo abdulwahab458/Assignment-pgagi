@@ -1,4 +1,4 @@
-export type ContentSource = "news" | "movie" | "social";
+export type ContentSource = "news" | "movie";
 
 export type ContentCategory =
   | "technology"

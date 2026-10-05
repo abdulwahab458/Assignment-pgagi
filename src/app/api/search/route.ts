@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllMockForSearch } from "@/lib/mock-data";
-import { fetchNewsArticles } from "@/lib/api/news";
-import { fetchMovieRecommendations } from "@/lib/api/movies";
-import { fetchSocialPosts } from "@/lib/api/social";
+import { searchNewsArticles } from "@/lib/api/news";
+import { searchMovies } from "@/lib/api/movies";
 
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get("q")?.trim() ?? "";
@@ -10,31 +8,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json([]);
   }
 
-  try {
-    const [news, movies, social] = await Promise.all([
-      fetchNewsArticles(
-        ["technology", "sports", "finance", "entertainment", "science"],
-        1,
-        20,
-      ),
-      fetchMovieRecommendations(["entertainment", "technology", "science"]),
-      fetchSocialPosts(q.replace(/\s+/g, "")),
-    ]);
+  const [newsResult, moviesResult] = await Promise.allSettled([
+    searchNewsArticles(q),
+    searchMovies(q),
+  ]);
 
-    const pool = [...news.items, ...movies, ...social];
-    const lower = q.toLowerCase();
-    let results = pool.filter(
-      (item) =>
-        item.title.toLowerCase().includes(lower) ||
-        item.description.toLowerCase().includes(lower),
+  const news = newsResult.status === "fulfilled" ? newsResult.value.items : [];
+  const movies = moviesResult.status === "fulfilled" ? moviesResult.value : [];
+
+  if (
+    news.length === 0 &&
+    movies.length === 0 &&
+    newsResult.status === "rejected" &&
+    moviesResult.status === "rejected"
+  ) {
+    return NextResponse.json(
+      { error: "Live search providers are unavailable." },
+      { status: 502 },
     );
-
-    if (results.length === 0) {
-      results = getAllMockForSearch(q);
-    }
-
-    return NextResponse.json(results.slice(0, 24));
-  } catch {
-    return NextResponse.json(getAllMockForSearch(q).slice(0, 24));
   }
+
+  return NextResponse.json([...news, ...movies].slice(0, 24));
 }

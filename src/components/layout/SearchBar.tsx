@@ -22,7 +22,7 @@ export function SearchBar() {
       <input
         id="global-search"
         type="search"
-        placeholder="Search news, movies, posts…"
+        placeholder="Search news and movies…"
         value={query}
         onChange={(e) => dispatch(setSearchQuery(e.target.value))}
         className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-2.5 pl-4 pr-10 text-sm outline-none ring-[var(--accent)] focus:ring-2"

@@ -1,12 +1,12 @@
 # Personalized Content Dashboard
 
-A Next.js dashboard that aggregates **news** (NewsAPI), **movie recommendations** (TMDB), and **social posts** (mock API) into one personalized feed with search, favorites, drag-and-drop reordering, and dark mode.
+A Next.js dashboard that aggregates live **news** (NewsAPI) and **movie recommendations** (TMDB) into one personalized feed with search, favorites, drag-and-drop reordering, and dark mode.
 
 ## Features
 
 - **Personalized feed** driven by category preferences (Settings)
 - **RTK Query** for async API loading with infinite scroll / load more
-- **Debounced search** across news, movies, and social content
+- **Debounced live search** across news and movies
 - **Trending** and **Favorites** sections
 - **Drag-and-drop** feed ordering (`@dnd-kit`)
 - **Redux Toolkit + redux-persist** (preferences, UI, favorites)
@@ -28,14 +28,14 @@ npm install
 cp .env.example .env.local
 ```
 
-Optional API keys in `.env.local` (the app uses **mock data** when keys are omitted):
+Add your API keys to `.env.local` (or `.env`) before running the app:
 
 | Variable        | Service   | Get a key                          |
 |----------------|-----------|-------------------------------------|
 | `NEWS_API_KEY` | NewsAPI   | https://newsapi.org/register        |
 | `TMDB_API_KEY` | TMDB v3   | https://www.themoviedb.org/settings/api |
 
-Keys are only read on the **server** in `/api/*` routes — never exposed to the browser.
+Keys are only read on the **server** in `/api/*` routes and are never exposed to the browser. The app returns provider errors instead of displaying mock content.
 
 ## Run locally
 
@@ -66,10 +66,10 @@ npm run test:e2e
 
 ```
 src/
-  app/api/          # BFF routes (news, movies, social, search)
+  app/api/          # BFF routes (feed, trending, search)
   components/       # UI, layout, sections
   store/            # Redux slices + RTK Query API
-  lib/              # API clients, mocks, utilities
+  lib/              # API clients and utilities
   types/            # Shared TypeScript types
 e2e/                # Playwright specs
 ```
@@ -77,8 +77,8 @@ e2e/                # Playwright specs
 ## Architecture notes
 
 - **State**: `preferences`, `favorites`, and `ui` (dark mode, navigation, feed order, search) persist in `localStorage` via redux-persist.
-- **Data**: Client calls `/api/feed`, `/api/trending`, and `/api/search`; routes call external APIs or fall back to mocks.
-- **Social**: Mock hashtag feed — swap `src/lib/api/social.ts` for a real provider when credentials are available.
+- **Data**: Client calls `/api/feed`, `/api/trending`, and `/api/search`; those routes fetch live results from NewsAPI and TMDB.
+- **Search**: Each provider is searched directly, rather than filtering an already-loaded feed.
 
 ## License
 

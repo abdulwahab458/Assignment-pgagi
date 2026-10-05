@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Personalized Content Dashboard",
   description:
-    "Track news, movie recommendations, and social posts in one interactive dashboard.",
+    "Track live news and movie recommendations in one interactive dashboard.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
